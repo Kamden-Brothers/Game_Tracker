@@ -1,39 +1,29 @@
-Still in development. Not decided how everything will be done.
-
+Still in development. Not decided how everything will be done.<br>
 This app is used for storing and analyzing scores of various card games. <br>
 <br>
 It uses an SQL database to store the data, Flask/HTML/JS/CSS to input and display data, and a Flask RESTful API for easy distribution of the data. <br>
-The app is split up into Microservices.
-1. Input - Add data to the database through a flask server
-2. Display - Display data to users
-3. RESTful API - Allow users to access data for different card games
-4+. Handling for each card game
+The app is split up into Microservices with each game having its own.
 <br>
 ![image](https://github.com/user-attachments/assets/1128b42a-6705-4ede-824e-08af8bd7882f)
 <br><br><br>
 
 
-**Database Structure**:<br><br>
+**Sample Database for Pinochle**:<br><br>
 **Player**<br>
 player_id PK INT<br>
 name STR<br>
 <br>
-<br>
-
 **Team**<br>
 team_id PK INT<br>
 player_one_id FK INT<br>
 player_two_id FK INT<br>
 team_name STR<br>
-
 **Game**<br>
 game_id PK INT<br>
 team_one FK INT<br>
 team_two FK INT<br>
 date DATE<br>
 game_of_day INT<br>
-
-
 **Round**<br>
 round_id PK INT<br>
 game_id FK INT<br>
