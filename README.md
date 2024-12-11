@@ -7,23 +7,23 @@ The app is split up into 3 Microservices.
 3. RESTful API - Allow users to 
 <br>
 ![image](https://github.com/user-attachments/assets/1128b42a-6705-4ede-824e-08af8bd7882f)
-<br>
+<br><br><br>
 
 
-Database Structure:<br>
--Player<br>
+**Database Structure**:<br><br>
+**Player**<br>
 player_id PK INT<br>
 name STR<br>
 <br>
 <br>
 
--Team<br>
+**Team**<br>
 team_id PK INT<br>
 player_one_id FK INT<br>
 player_two_id FK INT<br>
 team_name STR<br>
 
--Game<br>
+**Game**<br>
 game_id PK INT<br>
 team_one FK INT<br>
 team_two FK INT<br>
@@ -31,7 +31,7 @@ date DATE<br>
 game_of_day INT<br>
 
 
--Round<br>
+**Round**<br>
 round_id PK INT<br>
 game_id FK INT<br>
 round_number INT<br>
