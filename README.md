@@ -10,3 +10,37 @@ The app is split up into 3 Microservices.
 <br>
 
 
+Database Structure:<br>
+-Player<br>
+player_id PK INT<br>
+name STR<br>
+<br>
+<br>
+
+-Team<br>
+team_id PK INT<br>
+player_one_id FK INT<br>
+player_two_id FK INT<br>
+team_name STR<br>
+
+-Game<br>
+game_id PK INT<br>
+team_one FK INT<br>
+team_two FK INT<br>
+date DATE<br>
+game_of_day INT<br>
+
+
+-Round<br>
+round_id PK INT<br>
+game_id FK INT<br>
+round_number INT<br>
+bid INT (>50)<br>
+trump STR (Clubs, Spades, Diamonds, Hearts)<br>
+top_bidder FK INT(player_id)<br>
+meld_1 INT (>0)<br>
+meld_2 INT (>0)<br>
+tricks_1 INT (0-50)<br>
+tricks_2 INT (0-50)<br>
+points_gain_1 INT (>0)<br>
+points_gain_2 INT (>0)<br>
