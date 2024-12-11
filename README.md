@@ -4,7 +4,8 @@ This app is used for storing and analyzing scores of various card games. <br>
 It uses an SQL database to store the data, Flask/HTML/JS/CSS to input and display data, and a Flask RESTful API for easy distribution of the data. <br>
 The app is split up into Microservices with each game having its own.
 <br>
-![image](https://github.com/user-attachments/assets/1128b42a-6705-4ede-824e-08af8bd7882f)
+![image](https://github.com/user-attachments/assets/ace71b37-776d-4154-bce4-b4616588003a)
+
 <br><br><br>
 
 
