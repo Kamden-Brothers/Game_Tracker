@@ -1,35 +1,21 @@
 import webbrowser
 import logging
+import traceback
 
 from flask import Flask, render_template, request, send_from_directory
 from flask_cors import CORS
 
-from DataBase.DBCommands import DBWorker
+from app.DBCommands import DBWorker
+from app.services.player_service import PlayerService
+from app.services.team_service import TeamService
+from app.ConnectToDB import db_pool
 
 db_worker = DBWorker()
 
-# data = {'game_id': 9,
-#         'round_number': 3,
-#         'trump': 'Spades',
-#         'bid': 51,
-#         'top_bidder': 'BooksRBetter',
-#         'meld_1': '60',
-#         'meld_2': '20',
-#         'tricks_1': '35',
-#         'tricks_2': '15'
-# }
-# db_worker.submit_round(data)
-
-# print(db_worker.load_pinochle_match({'team1': 'Kamilya', 'team2': 'The Inlaws', 'date': '2025-01-03', 'gameOfDay': '1'}))
-# exit()
-
-players = db_worker.get_players()
-teams = db_worker.get_teams()
+player_services = PlayerService(db_pool)
+team_services = TeamService(db_pool)
 pinochle_matches = db_worker.get_pinochle_matches()
 
-print(players)
-print(teams)
-print(pinochle_matches)
 
 # Set path for log
 logging.basicConfig(filename='record.log', level=logging.DEBUG)
@@ -38,66 +24,20 @@ logging.basicConfig(filename='record.log', level=logging.DEBUG)
 app = Flask(__name__, template_folder='vue/dist', static_folder='vue/dist/assets')
 CORS(app)
 
-
-@app.route('/current_teams')
-def current_teams():
-    return teams
-
-
 @app.route('/current_players')
 def current_players():
-    print('Called player data')
-    return players
-
-
-@app.route('/submit_team', methods=['POST'])
-def submit_team():
-    print('submit_team')
-    try:
-        data = request.get_json()
-        db_worker.submit_team(data)
-    except Exception as e:
-        print(e)
-        return {'status': 'error', 'message': str(e)}
-
-    # Update list of teams
-    global teams
-    teams = db_worker.get_teams()
-    return {'status': 'success', 'data': None}
-
-
-@app.route('/delete_team', methods=['POST'])
-def delete_team():
-    print('delete_team')
-    try:
-        data = request.get_json()
-        db_worker.delete_team(data)
-    except Exception as e:
-        print(e)
-        return {'status': 'error', 'message': str(e)}
-
-    # Update list of teams
-    global teams
-    teams = db_worker.get_teams()
-    print(teams)
-    return {'status': 'success', 'data': None}
-
+    return player_services.get_all_players()
 
 @app.route('/submit_player', methods=['POST'])
 def submit_player():
     print('submit_player')
     try:
         data = request.get_json()
-        db_worker.submit_player(data)
+        return player_services.submit_player(data)
     except Exception as e:
         print(e)
-        return {'status': 'error', 'message': str(e)}
-
-    # Update list of teams
-    global players
-    players = db_worker.get_players()
-    print(players)
-    return {'status': 'success', 'data': None}
+        print(traceback.format_exc())
+        return {'status': 'error', 'message': 'Database error occurred'}
 
    
 @app.route('/delete_player', methods=['POST'])
@@ -105,15 +45,41 @@ def delete_player():
     print('delete_player')
     try:
         data = request.get_json()
-        db_worker.delete_player(data)
+        return player_services.delete_player(data)
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return {'status': 'error', 'message': str(e)}
 
-    # Update list of teams
-    global players
-    players = db_worker.get_players()
-    print(players)
+
+@app.route('/current_teams')
+def current_teams():
+    return team_services.get_all_teams()
+
+@app.route('/submit_team', methods=['POST'])
+def submit_team():
+    print('submit_team')
+    try:
+        data = request.get_json()
+        team_services.submit_team(data)
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        return {'status': 'error', 'message': str(e)}
+
+    return {'status': 'success', 'data': None}
+
+@app.route('/delete_team', methods=['POST'])
+def delete_team():
+    print('delete_team')
+    try:
+        data = request.get_json()
+        team_services.delete_team(data)
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        return {'status': 'error', 'message': str(e)}
+
     return {'status': 'success', 'data': None}
 
 
@@ -126,6 +92,21 @@ def create_pinochle_match():
         db_worker.create_pinochle_match(data)
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
+        return {'status': 'error', 'message': str(e)}
+
+    return {'status': 'success', 'data': None}
+
+
+@app.route('/submit_pinochle_game', methods=['POST'])
+def submit_pinochle_game():
+    try:
+        data = request.get_json()
+        print(data)
+        db_worker.submit_pinochle_game(data)
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
         return {'status': 'error', 'message': str(e)}
 
     return {'status': 'success', 'data': None}
@@ -139,6 +120,7 @@ def load_pinochle_match():
         matchup_matches = db_worker.load_pinochle_match(data)
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return {'status': 'error', 'message': str(e)}
     
     return {'status': 'success', 'data': matchup_matches}
@@ -151,6 +133,7 @@ def pinochle_matches():
         matchup_matches = db_worker.get_pinochle_match_by_teams(data)
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return {'status': 'error', 'message': str(e)}
 
     

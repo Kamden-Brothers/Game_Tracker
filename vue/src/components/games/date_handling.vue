@@ -6,22 +6,67 @@
 
     const date = ref('');
     const gameOfDay = ref(1);
+    const createMatch = ref(false);
 
     const selectedMatch = ref(NO_DATA);
 
     const emit = defineEmits();
 
+    function parseSelectedMatch(val) {
+        const splitVals = val.split('.');
+        const fnDate = parse(splitVals[0], 'MM-dd-yyyy', new Date());
+
+        const dateData = {'date': format(fnDate, 'yyyy-MM-dd'),
+                            'gameOfDay': splitVals[1],
+                            'dateGameStr': val}
+        return dateData
+    }
+
+    function checkSelected() {
+        if (selectedMatch.value && selectedMatch.value !== NO_DATA) {
+            return true;
+        }
+        return false;
+    }
+
     function matchSelected() {
-        const dateData = {'date': date.value,
-                          'gameOfDay': gameOfDay.value,
-                          'dateGameStr': `${date.value}.${gameOfDay.value}`};
-        emit('sendDateData', dateData)
+        if (checkSelected()) {
+            const dateData = {'date': date.value,
+                            'gameOfDay': gameOfDay.value,
+                            'dateGameStr': `${date.value}.${gameOfDay.value}`};
+            emit('sendDateData', dateData)
+        }
     };
+
+    function createNewMatch() {
+        if (date.value && gameOfDay.value > 0) {
+            matchSelected();
+            return;
+        };
+    };
+
+    function deleteMatch() {
+        console.log(selectedMatch.value)
+        if (checkSelected()) {
+            console.log('found')
+            console.log(parseSelectedMatch(selectedMatch.value))
+            // emit('deleteMatch', dateData)
+        }
+    }
+
+    function lookUpMatch() {
+        console.log('Looking');
+    };
+
+
+    function toggleSelect() {
+        createMatch.value = !createMatch.value;
+    }
 
     watch(date, (newVal) => {
         // Update gameOfDay if date was set manually by user
-        if (selectedMatch.value === NO_DATA && newVal) {
-            let selectedDate = format(parse(newVal, 'yyyy-MM-dd', new Date()), 'MM-dd-yyyy')
+        if (newVal) {
+            const selectedDate = format(parse(newVal, 'yyyy-MM-dd', new Date()), 'MM-dd-yyyy')
             const currentHighestMatch = props.matches
                 .filter((match) =>  match.includes(selectedDate))
                 .reduce((max, match) => {
@@ -46,7 +91,6 @@
                               'dateGameStr': newVal}
             emit('sendMatchSelected', dateData);
         }
-
     });
 
     const props = defineProps({
@@ -61,15 +105,55 @@
 
 <template>
     <div class="input-div">
-        <label>Select Match<select v-model="selectedMatch"><option v-for="match in matches" :value="match">{{ match }}</option></select></label>
-        
-        <div>
-            <div class="label-padding">Create New match</div>
-            <div class="input-div">
-                <input type="date" v-model="date">
-                <input type="number" v-model="gameOfDay" disabled>
-                <button @click="matchSelected">Create Match</button>
+        <div v-if="!createMatch">
+            <span class="default-header">Select Match</span><button class="toggle-button left-margin" @click="toggleSelect">Change to Create Match</button>
+            <div>
+                <div class="match-select">
+                    <select v-if="!createMatch" v-model="selectedMatch">
+                        <option v-for="match in matches" :value="match">{{ match }}</option>
+                    </select>
+                </div>
+                <button @click="lookUpMatch" class="toggle-button">Look Up Match</button>
+                <button @click="deleteMatch" class="toggle-button">Delete Match</button>
             </div>
         </div>
+
+        <div v-if="createMatch">
+            <span class="default-header">Create Match</span><button class="toggle-button" @click="toggleSelect">Change to Select Match</button>
+            <div>
+                <div class="match-select">
+                    <input type="date" v-model="date">
+                    <input type="number" v-model="gameOfDay" disabled>
+                </div>
+                <button @click="createNewMatch" class="toggle-button">Create Match</button>
+            </div>
+        </div>
+
     </div>
 </template>
+
+<style scoped>
+    .match-select {
+        padding: 10px 10px 10px 0px;
+    }
+
+    .display-match-items {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .toggle-button {
+        padding: 5px 10px;
+        border: none; /* Remove default border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        color: white;
+        background-color: #33aa33;
+    }
+
+    .left-margin {
+        margin: 0px 0px 0px 10px;
+    }
+</style>

@@ -1,6 +1,5 @@
 <template>
     <nav class="header">
-        <RouterLink class="header_item" to="/">Home</RouterLink>
         <RouterLink class="header_item" to="/add_player">Add Player</RouterLink>
         <RouterLink class="header_item" to="/add_team">Add Team</RouterLink>
         <RouterLink class="header_item" to="/create_game">Create Game</RouterLink>
@@ -40,7 +39,7 @@
         cursor: not-allowed;
     }
 
-    .lock-button {
+    .default-button {
         padding: 10px 15px;
         font-size: 1rem;
         color: #fff;
@@ -53,8 +52,14 @@
         max-width: 200px;
     }
 
-    .lock-button:hover {
+    .default-button:hover {
         background-color: #00dd00;
+    }
+
+    .default-header {
+        font-size: 30px;
+        text-decoration: bold;
+        padding: 5px;
     }
 
 </style>

@@ -1,8 +1,10 @@
 import json
+from contextlib import contextmanager
 
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2.pool import ThreadedConnectionPool
 
 from utils import LoadCredentials
 
@@ -132,3 +134,37 @@ def connect_to_db(dbname):
           user=credentials['username'], host='',
           password=credentials['password'])
     return con
+
+
+class Database:
+    def __init__(self, pool):
+        self.pool = pool
+
+    @contextmanager
+    def connection(self):
+        conn = self.pool.getconn()
+
+        try:
+            yield conn
+            conn.commit()
+
+        except Exception:
+            conn.rollback()
+            raise
+
+        finally:
+            self.pool.putconn(conn)
+
+def create_db_pool(dbname):
+    credentials = LoadCredentials.get_connection_credentials()
+
+    return Database(ThreadedConnectionPool(
+        minconn=1,
+        maxconn=10,
+        dbname=dbname,
+        user=credentials['username'],
+        host='',
+        password=credentials['password']
+    ))
+
+db_pool = create_db_pool('Pinchole')

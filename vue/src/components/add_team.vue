@@ -75,7 +75,7 @@
         postTeamData['teamName'] = teamName.value;
         postTeamData['selectedTeam'] = teamSelect.value;
 
-        if (teamSelect.value !== 'None') {
+        if (teamSelect.value !== 'None' && teamSelect.value !== NO_DATA) {
             postTeamData['selectedTeam'] = teamSelect.value;
             postTeamData['updateTeam'] = true;
         } else {
@@ -84,7 +84,7 @@
         }
         
         showSubmit.value = true;
-        if (teamSelect.value !== 'None') {
+        if (teamSelect.value !== 'None' && teamSelect.value !== NO_DATA) {
             submitQuestion.value = `Are you sure you want to update ${teamSelect.value} to "${teamName.value}" with username "${selectUsername1.value}", "${selectUsername2.value}"`;
         }
         else {

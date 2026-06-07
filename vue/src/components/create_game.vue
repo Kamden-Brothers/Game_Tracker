@@ -125,14 +125,14 @@
 <template>
     <div>{{serverMessage}}</div>
     <div>
-        <div class="input-div"><b>Select Game</b></div>
+        <div class="input-div default-header">Select Game</div>
         <div class="input-div">
                 <select v-model="selectedGame" :disabled="teamAndGameLocked">
                     <option>Pinochle</option>
                     <option>Spades</option>
                     <option>Hearts</option>
                 </select>
-            <button class="lock-button" @click="toggleTeamGameLock">{{ lockTeamsMessage }}</button>
+            <button class="default-button" @click="toggleTeamGameLock">{{ lockTeamsMessage }}</button>
         </div>
         
         <hr>

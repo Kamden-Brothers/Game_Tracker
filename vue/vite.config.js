@@ -18,20 +18,3 @@ export default defineConfig({
   },
 })
 
-//modules.export = {
-//    pages: {
-//        'index': {
-//            entry: './src/home/main.js',
-//            template: './index.html',
-//            title: 'Home',
-//            chunks: []
-//        },
-//        'add_player': {
-//            entry: './src/add_player/main.js',
-//            template: './add_player.html',
-//            'title': 'Add Players',
-//            chunks: []
-//        }
-//    }
-
-//}

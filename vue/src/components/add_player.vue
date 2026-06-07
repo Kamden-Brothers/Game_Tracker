@@ -64,7 +64,7 @@
         postSubmit = {};
         postSubmit['firstName'] = firstName.value;
         postSubmit['username'] = username.value;
-        if (selectUsername.value !== 'None') {
+        if (selectUsername.value !== 'None' && selectUsername.value !== NO_DATA) {
             postSubmit['selectedPlayer'] = selectUsername.value;
             postSubmit['updatePlayer'] = true;
         } else {
@@ -180,7 +180,7 @@
                 serverResponse.value = `Successfully added firstName="${firstName.value}", username="${username.value}"`;
                 resetForm();
             } else {
-                serverResponse.value = response.data.message;
+                serverResponse.value = response.data.error;
             }
 
         } catch (error) {
