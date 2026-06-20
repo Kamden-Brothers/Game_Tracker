@@ -30,12 +30,10 @@
     }
 
     function matchSelected() {
-        if (checkSelected()) {
-            const dateData = {'date': date.value,
-                            'gameOfDay': gameOfDay.value,
-                            'dateGameStr': `${date.value}.${gameOfDay.value}`};
-            emit('sendDateData', dateData)
-        }
+        const dateData = {'date': date.value,
+                        'gameOfDay': gameOfDay.value,
+                        'dateGameStr': `${date.value}.${gameOfDay.value}`};
+        emit('sendDateData', dateData)
     };
 
     function createNewMatch() {
@@ -46,11 +44,8 @@
     };
 
     function deleteMatch() {
-        console.log(selectedMatch.value)
         if (checkSelected()) {
-            console.log('found')
-            console.log(parseSelectedMatch(selectedMatch.value))
-            // emit('deleteMatch', dateData)
+            emit('deleteMatch', parseSelectedMatch(selectedMatch.value))
         }
     }
 

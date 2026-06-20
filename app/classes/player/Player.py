@@ -1,10 +1,8 @@
-from psycopg2.extensions import connection
-
 from .gateway.PlayerGateway import PlayerGateway
 
 class Player:
-    def __init__(self, db: connection):
-        self.gateway = PlayerGateway(db)
+    def __init__(self, gateway: PlayerGateway):
+        self.gateway = gateway
 
     def get_all_players(self):
         return self.gateway.get_all_players()

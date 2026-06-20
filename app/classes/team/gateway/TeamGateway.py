@@ -46,3 +46,35 @@ class TeamGateway:
             )
 
             return cur.rowcount
+
+    def get_team_info_by_name(self, team_name) -> dict | None:
+        with self.db.cursor() as cur:
+            cur.execute(
+                """
+                SELECT team.team_id, p1.username, p2.username FROM team
+                JOIN player as p1 on p1.player_id = team.player_1
+                JOIN player as p2 on p2.player_id = team.player_2
+                WHERE team_name = %s
+                """,
+                (team_name, )
+            )
+            
+            value = cur.fetchone()
+            if not value:
+                return None
+            return {'team_id': value[0], 'team_name': team_name, 'player_1': value[1], 'player_2': value[2]}
+
+    def get_team_by_name(self, team_name) -> int | None:
+        with self.db.cursor() as cur:
+            cur.execute(
+                """
+                SELECT team_id FROM team
+                WHERE team_name = %s
+                """,
+                (team_name, )
+            )
+            
+            value = cur.fetchone()
+            if not value:
+                return None
+            return value[0]

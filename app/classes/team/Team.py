@@ -1,11 +1,9 @@
-from psycopg2.extensions import connection
-
 from .gateway.TeamGateway import TeamGateway
 from app.classes.player.Player import Player
 
 class Team:
-    def __init__(self, db: connection, player: Player):
-        self.gateway = TeamGateway(db)
+    def __init__(self, gateway: TeamGateway, player: Player):
+        self.gateway = gateway
         self.player = player
     
     @staticmethod
@@ -14,6 +12,15 @@ class Team:
         Places lowest item in first position
         '''
         if first > second:
+            return second, first
+        return first, second
+
+    @staticmethod
+    def simple_sort_dict(first, second, key):
+        '''
+        Places lowest item in first position
+        '''
+        if first[key] > second[key]:
             return second, first
         return first, second
 
@@ -70,3 +77,31 @@ class Team:
         if not self.gateway.delete_team(selected_team):
             return {'status': False, 'error': 'Failed to delete team'}
         return {'status': True}
+    
+    def get_team_info_by_name(self, team_name: str) -> dict | None:
+        return self.gateway.get_team_info_by_name(team_name)
+
+    def get_teams_info_in_order(self, team_name_1: str, team_name_2: str) -> tuple[dict, dict]:
+        team_info_1 = self.get_team_info_by_name(team_name_1)
+        if not team_info_1:
+            raise Exception(f'Team {team_name_1} could not be found')
+        
+        team_info_2 = self.get_team_info_by_name(team_name_2)
+        if not team_info_2:
+            raise Exception(f'Team {team_name_2} could not be found')
+
+        return self.simple_sort_dict(team_info_1, team_info_2, 'team_id')
+
+    def get_team_by_name(self, team_name: str) -> int | None:
+        return self.gateway.get_team_by_name(team_name)
+
+    def get_teams_in_order(self, team_name_1: str, team_name_2: str) -> tuple[int, int]:
+        team_info_1 = self.get_team_by_name(team_name_1)
+        if not team_info_1:
+            raise Exception(f'Team {team_name_1} could not be found')
+        
+        team_info_2 = self.get_team_by_name(team_name_2)
+        if not team_info_2:
+            raise Exception(f'Team {team_name_2} could not be found')
+
+        return self.simple_sort(team_info_1, team_info_2)

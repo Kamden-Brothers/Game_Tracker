@@ -8,12 +8,14 @@ from flask_cors import CORS
 from app.DBCommands import DBWorker
 from app.services.player_service import PlayerService
 from app.services.team_service import TeamService
+from app.services.pinochle_service import PinochleService
 from app.ConnectToDB import db_pool
 
 db_worker = DBWorker()
 
 player_services = PlayerService(db_pool)
 team_services = TeamService(db_pool)
+pinochle_services = PinochleService(db_pool)
 pinochle_matches = db_worker.get_pinochle_matches()
 
 
@@ -37,7 +39,7 @@ def submit_player():
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': 'Database error occurred'}
+        return {'status': False, 'message': 'Database error occurred'}
 
    
 @app.route('/delete_player', methods=['POST'])
@@ -49,7 +51,7 @@ def delete_player():
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': str(e)}
+        return {'status': False, 'message': str(e)}
 
 
 @app.route('/current_teams')
@@ -65,9 +67,9 @@ def submit_team():
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': str(e)}
+        return {'status': False, 'message': str(e)}
 
-    return {'status': 'success', 'data': None}
+    return {'status': True, 'data': None}
 
 @app.route('/delete_team', methods=['POST'])
 def delete_team():
@@ -78,9 +80,9 @@ def delete_team():
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': str(e)}
+        return {'status': False, 'message': str(e)}
 
-    return {'status': 'success', 'data': None}
+    return {'status': True, 'data': None}
 
 
 @app.route('/create_pinochle_match', methods=['POST'])
@@ -88,14 +90,22 @@ def create_pinochle_match():
     print('create pinochle match')
     try:
         data = request.get_json()
-        print(data)
-        db_worker.create_pinochle_match(data)
+        return pinochle_services.create_game(data)
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': str(e)}
+        return {'status': False, 'message': str(e)}
 
-    return {'status': 'success', 'data': None}
+@app.route('/delete_pinochle_match', methods=['POST'])
+def delete_pinochle_match():
+    print('create pinochle match')
+    try:
+        data = request.get_json()
+        return pinochle_services.delete_game(data)
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        return {'status': False, 'message': str(e)}
 
 
 @app.route('/submit_pinochle_game', methods=['POST'])
@@ -107,37 +117,31 @@ def submit_pinochle_game():
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': str(e)}
+        return {'status': False, 'message': str(e)}
 
-    return {'status': 'success', 'data': None}
+    return {'status': True, 'data': None}
+
 
 
 @app.route('/load_pinochle_match', methods=['POST'])
 def load_pinochle_match():
     try:
         data = request.get_json()
-        print(data)
-        matchup_matches = db_worker.load_pinochle_match(data)
+        return pinochle_services.load_game(data)
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': str(e)}
-    
-    return {'status': 'success', 'data': matchup_matches}
-
+        return {'status': False, 'message': str(e)}
 
 @app.route('/pinochle_matches', methods=['POST'])
 def pinochle_matches():
     try:
         data = request.get_json()
-        matchup_matches = db_worker.get_pinochle_match_by_teams(data)
+        return pinochle_services.get_games_for_matchup(data)
     except Exception as e:
         print(e)
         print(traceback.format_exc())
-        return {'status': 'error', 'message': str(e)}
-
-    
-    return {'status': 'success', 'data': matchup_matches}
+        return {'status': False, 'message': str(e)}
 
 
 @app.route('/')

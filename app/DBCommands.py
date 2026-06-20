@@ -147,67 +147,6 @@ class DBWorker():
     def check_round_exists(self, cur, game_id, round_number):
         return bool(self.select(cur, 'round', ['round_number'], ['game_id', 'round_number'], (game_id, round_number)))
 
-    def create_pinochle_match(self, data):
-        '''
-        Add Game
-
-        Args:
-            data(dict):
-                'date': Day game was played.
-                'gameOfDay': Game number of the day.
-                'team1': team name of team one
-                'team2': team name of team two
-        '''
-        try:
-            with self.con.cursor() as cur:
-                team_1_id = self.select(cur, 'team', ['team_id'],  
-                                      ['team_name'], (data['team1'],), 
-                                      'Could not find Team 1')[0][0]
-
-                team_2_id = self.select(cur, 'team', ['team_id'],  
-                                      ['team_name'], (data['team2'],), 
-                                      'Could not find Team 2')[0][0]
-                print(team_1_id)
-                print(team_2_id)
-                team_1_id, team_2_id = simple_sort(team_1_id, team_2_id)
-
-                game = self.select(cur, 'game', ['game_id'], ['team_1', 'team_2', 'game_date', 'game_of_day'],
-                                   (team_1_id, team_2_id, data['date'], data['gameOfDay']))
-                if game:
-                    raise DB_Exception('Game already exists')
-                
-                self.insert(cur, 'game', ['team_1', 'team_2', 'game_date', 'game_of_day'],
-                            (team_1_id, team_2_id, data['date'], data['gameOfDay']),
-                            'Could not create game')
-
-        except Exception:
-            self.con.rollback()
-            raise
-        self.con.commit()
-
-    def get_pinochle_match_by_teams(self, data):
-        '''
-        Load matches between two teams
-
-        Args:
-            data(dict):
-                'team1': team name of team one
-                'team2': team name of team two
-
-        '''
-        with self.con.cursor() as cur:
-            team_1_id, team_2_id = self.select_2_teams(cur, data['team1'], data['team2'])
-            team_1_info = self.select_team_players(cur, team_1_id)
-            team_2_info = self.select_team_players(cur, team_2_id)
-
-            games = self.select(cur, 'game', ['game_date', 'game_of_day'],
-                                ['team_1', 'team_2'], (team_1_id, team_2_id))
-            return {
-                'matches': [f'{game[0].strftime('%m-%d-%Y')}.{game[1]}' for game in games],
-                'team1': team_1_info,
-                'team2': team_2_info
-            }
-
     def load_pinochle_match(self, data):
         '''
         Args:

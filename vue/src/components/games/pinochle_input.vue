@@ -250,7 +250,7 @@
                     data: gameData
                 })
                 
-                if (response.data.status === 'success') {
+                if (response.data.status === true) {
                     popupResponse.value = 'Data successfuly submitted'
                 } else {
                     popupResponse.value = 'Failed to load match data ' + response.data.message;
@@ -270,6 +270,7 @@
         matchData.gameOfDay = selectedGameOfDay = dateData.gameOfDay;
         matchData.team1 = teamOne.value;
         matchData.team2 = teamTwo.value;
+        console.log(matchData)
 
         try {
             const response = await axios({
@@ -278,10 +279,10 @@
                 data: matchData
             });
 
-            if (response.data.status === 'success') {
+            if (response.data.status === true) {
                 await fetchMatches();
             } else {
-                serverResponse.value = response.data.message;
+                serverResponse.value = response.data.error;
             }
 
         } catch (error) {
@@ -298,10 +299,10 @@
                 url: 'delete_pinochle_match',
                 data: matchData
             })
-            if (response.data.status === 'success') {
+            if (response.data.status === true) {
                 await fetchMatches();
             } else {
-                serverResponse.value = response.data.message;
+                serverResponse.value = response.data.error;
             }
 
         } catch (error) {
@@ -310,7 +311,6 @@
         }
     }
 
-    // Load Matches
     async function fetchMatch() {
         popupResponse.value = '';
         try {
@@ -321,7 +321,7 @@
                 data: matchData
             });
 
-            if (response.data.status === 'success') {
+            if (response.data.status === true) {
                 roundSelected.value = true;
                 console.log(response.data.data);
                 rounds.value = response.data.data.rounds;
@@ -333,7 +333,7 @@
                 console.log(rounds.value)
 
             } else {
-                serverResponse.value = 'Failed to load match data ' + response.data.message;
+                serverResponse.value = 'Failed to load match data ' + response.data.error;
             }
         } catch (error) {
             serverResponse.value = 'Failed to communicate with server';
@@ -350,8 +350,9 @@
                 url: 'pinochle_matches',
                 data: teamData
             });
-            
-            if (response.data.status === 'success') {
+            console.log(response)
+
+            if (response.data.status === true) {
                 matches.value = [NO_DATA]
                 const matchData = response.data.data
 
@@ -373,7 +374,7 @@
                 lockedPlayers.value.push(matchData.team2.player_1)
                 lockedPlayers.value.push(matchData.team2.player_2)
             } else {
-                serverResponse.value = 'Failed to load match data ' + response.data.message;
+                serverResponse.value = 'Failed to load match data ' + response.data.error;
             }
         } catch (error) {
             serverResponse.value = 'Failed to communicate with server';
@@ -454,7 +455,7 @@
 </script>
 
 <template>
-    <div v-if="serverResponse">{{ serverResponse }}</div>
+    <div v-if="serverResponse" style="color:red">{{ serverResponse }}</div>
 
     <!-- <button @click="quickSetup">driver function</button> -->
     <div>
